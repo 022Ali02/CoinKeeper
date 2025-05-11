@@ -2,6 +2,7 @@ package org.example.coinkeeper.service;
 
 import org.example.coinkeeper.dto.TransactionDTO;
 import org.example.coinkeeper.exception.ResourceNotFoundException;
+import org.example.coinkeeper.mapper.TransactionMapper;
 import org.example.coinkeeper.model.Transaction;
 import org.example.coinkeeper.model.User;
 import org.example.coinkeeper.repository.CategoryRepository;
@@ -52,7 +53,7 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
-        transaction.setType(transactionDTO.getType());
+        transaction.setType(transactionDTO.getType().getType());
         transaction.setAmount(transactionDTO.getAmount());
         transaction.setDate(transactionDTO.getDate());
         transaction.setComment(transactionDTO.getComment());

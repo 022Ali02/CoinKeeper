@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByUser(User user);
@@ -19,4 +20,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("user") User user,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+    Optional<Transaction> findByIdAndUser(Long id, User user);
+
 }

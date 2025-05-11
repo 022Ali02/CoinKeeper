@@ -2,6 +2,7 @@ package org.example.coinkeeper.service;
 
 import org.example.coinkeeper.dto.StatsResponse;
 import org.example.coinkeeper.model.Transaction;
+import org.example.coinkeeper.model.TransactionType;
 import org.example.coinkeeper.model.User;
 import org.example.coinkeeper.repository.TransactionRepository;
 import org.example.coinkeeper.repository.UserRepository;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,24 +33,24 @@ public class StatsService {
         List<Transaction> transactions = transactionRepository.findByUserAndDateBetween(
                 user, startDateTime, endDateTime);
 
-        BigDecimal totalIncome = calculateTotal(transactions, Transaction.INCOME);
-        BigDecimal totalExpense = calculateTotal(transactions, Transaction.EXPENSE);
+        BigDecimal totalIncome = calculateTotal(transactions, TransactionType.INCOME);
+        BigDecimal totalExpense = calculateTotal(transactions, TransactionType.EXPENSE);
         BigDecimal balance = totalIncome.subtract(totalExpense);
 
-        Map<String, BigDecimal> incomeByCategory = groupByCategory(transactions, Transaction.INCOME);
-        Map<String, BigDecimal> expenseByCategory = groupByCategory(transactions, Transaction.EXPENSE);
+        Map<String, BigDecimal> incomeByCategory = groupByCategory(transactions, TransactionType.INCOME);
+        Map<String, BigDecimal> expenseByCategory = groupByCategory(transactions, TransactionType.EXPENSE);
 
         return new StatsResponse(totalIncome, totalExpense, balance, incomeByCategory, expenseByCategory);
     }
 
-    private BigDecimal calculateTotal(List<Transaction> transactions, Transaction type) {
+    private BigDecimal calculateTotal(List<Transaction> transactions, TransactionType type) {
         return transactions.stream()
                 .filter(t -> t.getType() == type)
                 .map(Transaction::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private Map<String, BigDecimal> groupByCategory(List<Transaction> transactions, Transaction type) {
+    private Map<String, BigDecimal> groupByCategory(List<Transaction> transactions, TransactionType type) {
         return transactions.stream()
                 .filter(t -> t.getType() == type && t.getCategory() != null)
                 .collect(Collectors.groupingBy(
@@ -62,6 +62,7 @@ public class StatsService {
                         )
                 ));
     }
+
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

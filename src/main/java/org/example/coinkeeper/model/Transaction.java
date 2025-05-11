@@ -2,7 +2,6 @@ package org.example.coinkeeper.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -35,6 +34,3 @@ public class Transaction {
     private User user;
 }
 
-enum TransactionType {
-    INCOME, EXPENSE
-}
