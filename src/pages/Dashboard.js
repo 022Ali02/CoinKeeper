@@ -20,11 +20,14 @@ const Dashboard = () => {
         username: "admin", // Username
     });
 
+    // Added states for date filters
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
     const navigate = useNavigate(); // Hook for navigation
 
     useEffect(() => {
-        // Load transactions and categories from localStorage when component mounts
-        const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
+        const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || []; // If not, then an empty array
         setTransactions(savedTransactions);
 
         const savedCategories = JSON.parse(localStorage.getItem("categories")) || [];
@@ -50,7 +53,9 @@ const Dashboard = () => {
         datasets: [
             {
                 data: categories.map((cat) =>
-                    transactions.filter((tx) => tx.category === cat.name && tx.type === "income").reduce((acc, tx) => acc + tx.amount, 0)
+                    transactions.filter(
+                        (tx) => tx.category === cat.name && tx.type === "income"
+                    ).reduce((acc, tx) => acc + tx.amount, 0)
                 ),
                 backgroundColor: categories.map((cat) => cat.color), // Using category colors
                 hoverBackgroundColor: categories.map((cat) => cat.color),
@@ -64,7 +69,9 @@ const Dashboard = () => {
         datasets: [
             {
                 data: categories.map((cat) =>
-                    transactions.filter((tx) => tx.category === cat.name && tx.type === "expense").reduce((acc, tx) => acc + tx.amount, 0)
+                    transactions.filter(
+                        (tx) => tx.category === cat.name && tx.type === "expense"
+                    ).reduce((acc, tx) => acc + tx.amount, 0)
                 ),
                 backgroundColor: categories.map((cat) => cat.color), // Using category colors
                 hoverBackgroundColor: categories.map((cat) => cat.color),
@@ -75,8 +82,11 @@ const Dashboard = () => {
     // Handle adding a new transaction
     const handleAddTransaction = async (e) => {
         e.preventDefault();
+        if (!newTransaction.date) {
+            alert("Дата обязательна для добавления транзакции!"); // Validation for date
+            return;
+        }
         try {
-            // Adding transaction
             const response = await addTransaction(newTransaction);
             const updatedTransactions = [...transactions, response]; // Update the transaction list
             setTransactions(updatedTransactions); // Update state
@@ -108,6 +118,30 @@ const Dashboard = () => {
         navigate("/settings"); // Navigate to settings page
     };
 
+    // Handle date filter
+    const filteredTransactions = transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && txDate < start) return false;
+        if (end && txDate > end) return false;
+
+        return true;
+    });
+
+    const handleDeleteTransaction = (id) => {
+        const updatedTransactions = transactions.filter((tx) => tx.id !== id);
+        setTransactions(updatedTransactions);
+        localStorage.setItem("transactions", JSON.stringify(updatedTransactions)); // Save to localStorage
+    };
+
+    const handleEditTransaction = (id) => {
+        const transactionToEdit = transactions.find((tx) => tx.id === id);
+        setNewTransaction(transactionToEdit);
+        setIsModalOpen(true);
+    };
+
     return (
         <div className="min-h-screen bg-gray-900 text-white p-6">
             <h1 className="text-3xl font-bold mb-6">💰 Dashboard</h1>
@@ -135,6 +169,23 @@ const Dashboard = () => {
                 >
                     ⚙️ Настройки
                 </button>
+            </div>
+
+            {/* Filter by date */}
+            <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Фильтровать по датам</h2>
+                <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="bg-gray-700 text-white p-2 rounded-md mb-4"
+                />
+                <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="bg-gray-700 text-white p-2 rounded-md mb-4"
+                />
             </div>
 
             {isModalOpen && (
@@ -176,17 +227,6 @@ const Dashboard = () => {
                                 ))}
                             </select>
                             <input
-                                type="text"
-                                placeholder="Комментарий"
-                                value={newTransaction.comment}
-                                onChange={(e) =>
-                                    setNewTransaction({
-                                        ...newTransaction,
-                                        comment: e.target.value,
-                                    })
-                                }
-                            />
-                            <input
                                 type="date"
                                 value={newTransaction.date}
                                 onChange={(e) =>
@@ -202,13 +242,15 @@ const Dashboard = () => {
 
             <div className="mt-8">
                 <h2 className="text-xl font-semibold mb-4">Последние транзакции</h2>
-                {transactions.length === 0 ? (
+                {filteredTransactions.length === 0 ? (
                     <p>Нет транзакций</p>
                 ) : (
                     <ul>
-                        {transactions.map((tx) => (
+                        {filteredTransactions.map((tx) => (
                             <li key={tx.id}>
-                                {tx.type === "income" ? "+" : "-"} {tx.amount} {tx.category}
+                                {tx.type === "income" ? "+" : "-"} {tx.amount} {tx.category} - {tx.date}
+                                <button onClick={() => handleEditTransaction(tx.id)}>Редактировать</button>
+                                <button onClick={() => handleDeleteTransaction(tx.id)}>Удалить</button>
                             </li>
                         ))}
                     </ul>
