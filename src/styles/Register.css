@@ -1,0 +1,76 @@
+/* Register.css */
+
+/* Контейнер для страницы */
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #1a202c; /* Темный фон */
+    color: white;
+    padding: 1.5rem;
+}
+
+/* Заголовок */
+.register-heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+/* Стили для формы */
+.register-form {
+    background-color: #2d3748;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Стили для полей ввода */
+.input-field {
+    width: 100%;
+    padding: 1rem;
+    background-color: #2d3748;
+    border-radius: 0.375rem;
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #444;
+}
+
+/* Кнопка регистрации */
+.submit-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #48bb78;
+    color: white;
+    border-radius: 0.375rem;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1rem;
+    border: none;
+}
+
+.submit-button:hover {
+    background-color: #38a169;
+}
+
+/* Ссылка для входа */
+.login-link {
+    color: white;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.login-text {
+    color: #63b3ed;
+    cursor: pointer;
+}
+
+.login-text:hover {
+    color: #4fa3d1;
+}

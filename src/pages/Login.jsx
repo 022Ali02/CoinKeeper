@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
 import { loginStart, loginSuccess, loginFailure } from "../store/slices/authSlice";
+import "../styles/Login.css"; // Импортируем стили
 
 function Login() {
     const dispatch = useDispatch();
@@ -26,30 +27,36 @@ function Login() {
     };
 
     return (
-        <div style={{ textAlign: "center", marginTop: "100px" }}>
-            <h2>Вход</h2>
-            <form onSubmit={handleSubmit}>
+        <div className="login-container">
+            <h1 className="login-heading">Вход</h1>
+            <form onSubmit={handleSubmit} className="login-form">
                 <input
                     type="text"
                     placeholder="Логин"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
-                /><br />
+                    className="input-field"
+                />
                 <input
                     type="password"
                     placeholder="Пароль"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                /><br />
-                <button type="submit" disabled={loading}>
+                    className="input-field"
+                />
+                <button type="submit" disabled={loading} className="submit-button">
                     {loading ? "Вход..." : "Войти"}
                 </button>
+                <button
+                    type="button"
+                    onClick={() => navigate("/register")}
+                    className="register-button"
+                >
+                    Регистрация
+                </button>
             </form>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <br />
-            <button onClick={() => navigate("/register")}>Регистрация</button>
         </div>
     );
 }

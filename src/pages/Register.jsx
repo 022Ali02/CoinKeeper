@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api";
+import "../styles/Register.css"; // Импортируем стили
 
 function Register() {
     const navigate = useNavigate();
@@ -19,26 +20,35 @@ function Register() {
     };
 
     return (
-        <div style={{ textAlign: "center", marginTop: "100px" }}>
-            <h2>Регистрация</h2>
-            <form onSubmit={handleRegister}>
+        <div className="register-container">
+            <h1 className="register-heading">Регистрация</h1>
+            <form onSubmit={handleRegister} className="register-form">
                 <input
                     type="text"
                     placeholder="Логин"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
-                /><br />
+                    className="input-field"
+                />
                 <input
                     type="password"
                     placeholder="Пароль"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                /><br />
-                <button type="submit">Зарегистрироваться</button>
+                    className="input-field"
+                />
+                <button type="submit" className="submit-button">
+                    Зарегистрироваться
+                </button>
             </form>
-            <p>Уже есть аккаунт? <span style={{ color: "blue", cursor: "pointer" }} onClick={() => navigate("/login")}>Войти</span></p>
+            <p className="login-link">
+                Уже есть аккаунт?{" "}
+                <span onClick={() => navigate("/login")} className="login-text">
+                    Войти
+                </span>
+            </p>
         </div>
     );
 }

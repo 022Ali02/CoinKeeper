@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Importing useNavigate hook
+import "../styles/Settings.css"; // Импортируем стили
 
 const Settings = () => {
     const [categories, setCategories] = useState([]);
@@ -52,53 +53,47 @@ const Settings = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white p-6">
-            <h1 className="text-3xl font-bold mb-6">Настройки категорий</h1>
+        <div className="settings-container">
+            <h1 className="settings-heading">Настройки категорий</h1>
 
             {/* Button to go back to Dashboard */}
-            <button
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-xl transition mb-4"
-                onClick={handleGoToDashboard}
-            >
-                Назад
-            </button>
+            <button className="back-button" onClick={handleGoToDashboard}>Назад</button>
 
             {/* Form to add new category */}
-            <form onSubmit={handleAddCategory} className="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <form onSubmit={handleAddCategory} className="category-form">
                 <input
                     type="text"
                     placeholder="Новая категория"
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full p-2 bg-gray-700 rounded-md text-white mb-4"
+                    className="input-field"
                 />
                 <input
                     type="color"
                     value={newColor}
                     onChange={(e) => setNewColor(e.target.value)}
-                    className="w-full mb-4"
+                    className="color-picker"
                 />
-                <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl transition"
-                >
+                <button type="submit" className="submit-button">
                     Добавить категорию
                 </button>
             </form>
 
             {/* List of Categories */}
-            <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Список категорий</h2>
-                <ul>
+            <div className="categories-list">
+                <h2>Список категорий</h2>
+                <ul className="category-list">
                     {categories.length === 0 ? (
-                        <p>Нет категорий</p>
+                        <p className="no-categories">Нет категорий</p>
                     ) : (
                         categories.map((category) => (
-                            <li key={category.id} className="flex justify-between items-center mb-4">
-                                <span style={{ color: category.color }}>{category.name}</span>
-                                <div className="flex space-x-2">
+                            <li key={category.id} className="category-item">
+                                <span className="category-name" style={{ color: category.color }}>
+                                    {category.name}
+                                </span>
+                                <div className="category-buttons">
                                     <button
-                                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl transition"
+                                        className="edit-button"
                                         onClick={() => {
                                             setIsEditing(true);
                                             setCategoryToEdit(category); // Pass category object for editing
@@ -107,7 +102,7 @@ const Settings = () => {
                                         Редактировать
                                     </button>
                                     <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl transition"
+                                        className="delete-button"
                                         onClick={() => handleDeleteCategory(category.id)} // Delete category by id
                                     >
                                         Удалить
@@ -119,30 +114,32 @@ const Settings = () => {
                 </ul>
             </div>
 
-            {/* Edit Category Form */}
+            {/* Edit Category Form (Modal style) */}
             {isEditing && (
-                <div className="mt-8">
-                    <h2 className="text-xl font-semibold mb-4">Редактировать категорию</h2>
-                    <form onSubmit={handleEditCategory} className="bg-gray-800 p-6 rounded-lg shadow-lg">
-                        <input
-                            type="text"
-                            value={categoryToEdit.name}
-                            onChange={(e) => setCategoryToEdit({ ...categoryToEdit, name: e.target.value })}
-                            className="w-full p-2 bg-gray-700 rounded-md text-white mb-4"
-                        />
-                        <input
-                            type="color"
-                            value={categoryToEdit.color}
-                            onChange={(e) => setCategoryToEdit({ ...categoryToEdit, color: e.target.value })}
-                            className="w-full mb-4"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl transition"
-                        >
-                            Сохранить изменения
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>Редактировать категорию</h2>
+                        <form onSubmit={handleEditCategory}>
+                            <input
+                                type="text"
+                                value={categoryToEdit.name}
+                                onChange={(e) => setCategoryToEdit({ ...categoryToEdit, name: e.target.value })}
+                                className="input-field"
+                            />
+                            <input
+                                type="color"
+                                value={categoryToEdit.color}
+                                onChange={(e) => setCategoryToEdit({ ...categoryToEdit, color: e.target.value })}
+                                className="color-picker"
+                            />
+                            <button type="submit" className="submit-button">
+                                Сохранить изменения
+                            </button>
+                        </form>
+                        <button className="close-button" onClick={() => setIsEditing(false)}>
+                            Закрыть
                         </button>
-                    </form>
+                    </div>
                 </div>
             )}
         </div>
