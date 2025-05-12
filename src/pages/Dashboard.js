@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { getTransactions, addTransaction } from "../api";
-import { useNavigate } from "react-router-dom"; // Импортируем useNavigate для навигации
+import { useNavigate } from "react-router-dom"; // Importing useNavigate for navigation
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-// Регистрируем компоненты для Chart.js
+// Register components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Dashboard = () => {
     const [transactions, setTransactions] = useState([]);
-    const [categories, setCategories] = useState([]); // Состояние для категорий
+    const [categories, setCategories] = useState([]); // State for categories
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTransaction, setNewTransaction] = useState({
-        type: "expense", // Стандартно ставим расход
+        type: "expense", // Default set to expense
         amount: "",
         category: "",
         comment: "",
         date: "",
-        username: "admin", // Имя пользователя
+        username: "admin", // Username
     });
 
-    const navigate = useNavigate(); // Хук для навигации
+    const navigate = useNavigate(); // Hook for navigation
 
-    // Загружаем транзакции из localStorage при монтировании компонента
     useEffect(() => {
-        const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || []; // Если нет, то пустой массив
+        // Load transactions and categories from localStorage when component mounts
+        const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
         setTransactions(savedTransactions);
 
         const savedCategories = JSON.parse(localStorage.getItem("categories")) || [];
@@ -44,29 +44,47 @@ const Dashboard = () => {
         .filter((tx) => tx.type === "expense")
         .reduce((acc, tx) => acc + tx.amount, 0);
 
-    const chartData = {
-        labels: ["Доходы", "Расходы"],
+    // Data for the income chart
+    const incomeChartData = {
+        labels: categories.map((cat) => cat.name), // Category names for labels
         datasets: [
             {
-                data: [incomeTotal, expenseTotal], // Доходы и расходы
-                backgroundColor: ["#36A2EB", "#FF6384"], // Цвета секторов
-                hoverBackgroundColor: ["#36A2EB", "#FF6384"],
+                data: categories.map((cat) =>
+                    transactions.filter((tx) => tx.category === cat.name && tx.type === "income").reduce((acc, tx) => acc + tx.amount, 0)
+                ),
+                backgroundColor: categories.map((cat) => cat.color), // Using category colors
+                hoverBackgroundColor: categories.map((cat) => cat.color),
             },
         ],
     };
 
-    // Обработчик добавления транзакции
+    // Data for the expense chart
+    const expenseChartData = {
+        labels: categories.map((cat) => cat.name), // Category names for labels
+        datasets: [
+            {
+                data: categories.map((cat) =>
+                    transactions.filter((tx) => tx.category === cat.name && tx.type === "expense").reduce((acc, tx) => acc + tx.amount, 0)
+                ),
+                backgroundColor: categories.map((cat) => cat.color), // Using category colors
+                hoverBackgroundColor: categories.map((cat) => cat.color),
+            },
+        ],
+    };
+
+    // Handle adding a new transaction
     const handleAddTransaction = async (e) => {
         e.preventDefault();
         try {
-            const response = await addTransaction(newTransaction); // Добавляем транзакцию
-            const updatedTransactions = [...transactions, response]; // Обновляем список транзакций
-            setTransactions(updatedTransactions); // Обновляем состояние
+            // Adding transaction
+            const response = await addTransaction(newTransaction);
+            const updatedTransactions = [...transactions, response]; // Update the transaction list
+            setTransactions(updatedTransactions); // Update state
 
-            // Сохраняем обновленные транзакции в localStorage
+            // Save the updated transactions to localStorage
             localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
 
-            setIsModalOpen(false); // Закрываем модальное окно
+            setIsModalOpen(false); // Close the modal
             setNewTransaction({
                 type: "expense",
                 amount: "",
@@ -76,19 +94,18 @@ const Dashboard = () => {
                 username: "admin",
             });
         } catch (error) {
-            console.error("Ошибка при добавлении транзакции:", error);
+            console.error("Error adding transaction:", error);
         }
     };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("transactions"); // Очистить транзакции из localStorage
-        window.location.href = "/login"; // Перенаправляем на страницу логина
+        localStorage.removeItem("transactions"); // Clear transactions from localStorage
+        window.location.href = "/login"; // Redirect to login page
     };
 
-    // Добавляем кнопку для перехода в Settings
     const handleGoToSettings = () => {
-        navigate("/settings"); // Переход на страницу настроек
+        navigate("/settings"); // Navigate to settings page
     };
 
     return (
@@ -108,11 +125,10 @@ const Dashboard = () => {
                 </button>
                 <button
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl transition"
-                    onClick={handleLogout} // Кнопка выхода
+                    onClick={handleLogout} // Logout button
                 >
                     🚪 Выйти
                 </button>
-                {/* Кнопка для перехода в настройки */}
                 <button
                     className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl transition"
                     onClick={handleGoToSettings}
@@ -145,7 +161,6 @@ const Dashboard = () => {
                                     setNewTransaction({ ...newTransaction, amount: e.target.value })
                                 }
                             />
-                            {/* Дропдаун для выбора категории */}
                             <select
                                 value={newTransaction.category}
                                 onChange={(e) =>
@@ -200,10 +215,16 @@ const Dashboard = () => {
                 )}
             </div>
 
-            {/* Круговая диаграмма */}
+            {/* Pie Chart for Income */}
             <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Статистика по транзакциям</h2>
-                <Pie data={chartData} />
+                <h2 className="text-xl font-semibold mb-4">Доходы</h2>
+                <Pie data={incomeChartData} />
+            </div>
+
+            {/* Pie Chart for Expenses */}
+            <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">Расходы</h2>
+                <Pie data={expenseChartData} />
             </div>
         </div>
     );

@@ -1,46 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Importing useNavigate hook
+
 const Settings = () => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState(""); // For adding a new category
+    const [newColor, setNewColor] = useState("#000000"); // For selecting a new category color
     const [isEditing, setIsEditing] = useState(false); // For editing category
-    const [categoryToEdit, setCategoryToEdit] = useState({ id: "", name: "" }); // Category to be edited
+    const [categoryToEdit, setCategoryToEdit] = useState({ id: "", name: "", color: "" }); // Category to be edited
 
     const navigate = useNavigate(); // Initialize navigate hook
 
     useEffect(() => {
-        // Loading categories from localStorage
         const savedCategories = JSON.parse(localStorage.getItem("categories")) || [];
         setCategories(savedCategories); // Update category list
     }, []);
 
-    // Adding category
     const handleAddCategory = (e) => {
         e.preventDefault();
         if (newCategory.trim()) {
-            const newCategoryObj = { id: Date.now(), name: newCategory }; // Create category object
+            const newCategoryObj = { id: Date.now(), name: newCategory, color: newColor }; // Create category object with color
             const updatedCategories = [...categories, newCategoryObj]; // Add new category to list
             localStorage.setItem("categories", JSON.stringify(updatedCategories)); // Save to localStorage
             setCategories(updatedCategories); // Update state
             setNewCategory(""); // Clear input after adding
+            setNewColor("#000000"); // Reset color
         }
     };
 
-    // Editing category
     const handleEditCategory = (e) => {
         e.preventDefault();
         if (categoryToEdit.name.trim()) {
             const updatedCategories = categories.map((category) =>
-                category.id === categoryToEdit.id ? { ...category, name: categoryToEdit.name } : category
+                category.id === categoryToEdit.id ? { ...category, name: categoryToEdit.name, color: categoryToEdit.color } : category
             );
             localStorage.setItem("categories", JSON.stringify(updatedCategories)); // Save updated categories
             setCategories(updatedCategories); // Update state
             setIsEditing(false); // Close edit mode
-            setCategoryToEdit({ id: "", name: "" }); // Clear edit fields
+            setCategoryToEdit({ id: "", name: "", color: "" }); // Clear edit fields
         }
     };
 
-    // Deleting category
     const handleDeleteCategory = (categoryId) => {
         const updatedCategories = categories.filter((category) => category.id !== categoryId); // Remove deleted category
         localStorage.setItem("categories", JSON.stringify(updatedCategories)); // Save updated categories
@@ -70,8 +69,14 @@ const Settings = () => {
                     type="text"
                     placeholder="Новая категория"
                     value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}  // Update field value
+                    onChange={(e) => setNewCategory(e.target.value)}
                     className="w-full p-2 bg-gray-700 rounded-md text-white mb-4"
+                />
+                <input
+                    type="color"
+                    value={newColor}
+                    onChange={(e) => setNewColor(e.target.value)}
+                    className="w-full mb-4"
                 />
                 <button
                     type="submit"
@@ -81,7 +86,7 @@ const Settings = () => {
                 </button>
             </form>
 
-            {/* List of categories */}
+            {/* List of Categories */}
             <div className="mt-8">
                 <h2 className="text-xl font-semibold mb-4">Список категорий</h2>
                 <ul>
@@ -90,7 +95,7 @@ const Settings = () => {
                     ) : (
                         categories.map((category) => (
                             <li key={category.id} className="flex justify-between items-center mb-4">
-                                <span>{category.name}</span>
+                                <span style={{ color: category.color }}>{category.name}</span>
                                 <div className="flex space-x-2">
                                     <button
                                         className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl transition"
@@ -114,7 +119,7 @@ const Settings = () => {
                 </ul>
             </div>
 
-            {/* Form to edit category */}
+            {/* Edit Category Form */}
             {isEditing && (
                 <div className="mt-8">
                     <h2 className="text-xl font-semibold mb-4">Редактировать категорию</h2>
@@ -124,6 +129,12 @@ const Settings = () => {
                             value={categoryToEdit.name}
                             onChange={(e) => setCategoryToEdit({ ...categoryToEdit, name: e.target.value })}
                             className="w-full p-2 bg-gray-700 rounded-md text-white mb-4"
+                        />
+                        <input
+                            type="color"
+                            value={categoryToEdit.color}
+                            onChange={(e) => setCategoryToEdit({ ...categoryToEdit, color: e.target.value })}
+                            className="w-full mb-4"
                         />
                         <button
                             type="submit"
