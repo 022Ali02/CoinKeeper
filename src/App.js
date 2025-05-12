@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";
+import './styles/Dashboard.css';
 
 function App() {
     const location = useLocation();

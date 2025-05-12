@@ -47,27 +47,17 @@ const Dashboard = () => {
         .filter((tx) => tx.type === "expense")
         .reduce((acc, tx) => acc + tx.amount, 0);
 
-    // Filtered transactions for date range
-    const filteredTransactions = transactions.filter((tx) => {
-        const txDate = new Date(tx.date);
-        const start = startDate ? new Date(startDate) : null;
-        const end = endDate ? new Date(endDate) : null;
-
-        if (start && txDate < start) return false;
-        if (end && txDate > end) return false;
-
-        return true;
-    });
-
     // Data for the income chart
     const incomeChartData = {
         labels: categories.map((cat) => cat.name), // Category names for labels
         datasets: [
             {
                 data: categories.map((cat) =>
-                    filteredTransactions.filter(
-                        (tx) => tx.category === cat.name && tx.type === "income"
-                    ).reduce((acc, tx) => acc + tx.amount, 0)
+                    transactions
+                        .filter(
+                            (tx) => tx.category === cat.name && tx.type === "income"
+                        )
+                        .reduce((acc, tx) => acc + tx.amount, 0)
                 ),
                 backgroundColor: categories.map((cat) => cat.color), // Using category colors
                 hoverBackgroundColor: categories.map((cat) => cat.color),
@@ -81,9 +71,11 @@ const Dashboard = () => {
         datasets: [
             {
                 data: categories.map((cat) =>
-                    filteredTransactions.filter(
-                        (tx) => tx.category === cat.name && tx.type === "expense"
-                    ).reduce((acc, tx) => acc + tx.amount, 0)
+                    transactions
+                        .filter(
+                            (tx) => tx.category === cat.name && tx.type === "expense"
+                        )
+                        .reduce((acc, tx) => acc + tx.amount, 0)
                 ),
                 backgroundColor: categories.map((cat) => cat.color), // Using category colors
                 hoverBackgroundColor: categories.map((cat) => cat.color),
@@ -130,14 +122,24 @@ const Dashboard = () => {
         navigate("/settings"); // Navigate to settings page
     };
 
-    // Handle delete transaction
+    // Handle date filter
+    const filteredTransactions = transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && txDate < start) return false;
+        if (end && txDate > end) return false;
+
+        return true;
+    });
+
     const handleDeleteTransaction = (id) => {
         const updatedTransactions = transactions.filter((tx) => tx.id !== id);
         setTransactions(updatedTransactions);
         localStorage.setItem("transactions", JSON.stringify(updatedTransactions)); // Save to localStorage
     };
 
-    // Handle edit transaction
     const handleEditTransaction = (id) => {
         const transactionToEdit = transactions.find((tx) => tx.id === id);
         setNewTransaction(transactionToEdit);
@@ -145,37 +147,39 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white p-6">
-            <h1 className="text-3xl font-bold mb-6">💰 Dashboard</h1>
-
-            <div className="bg-gray-800 p-4 rounded-lg shadow-lg flex justify-between items-center">
-                <div>
-                    <p className="text-lg">Текущий баланс:</p>
-                    <p className="text-2xl font-bold text-green-400">${balance.toFixed(2)}</p>
+        <div className="min-h-screen bg-black text-white p-6">
+            {/* Navbar */}
+            <div className="navbar">
+                <div className="navbar-left">
+                    <a href="/dashboard" className="active">Dashboard</a>
                 </div>
-                <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
-                    onClick={() => setIsModalOpen(true)}
-                >
-                    ➕ Добавить транзакцию
-                </button>
-                <button
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl transition"
-                    onClick={handleLogout} // Logout button
-                >
-                    🚪 Выйти
-                </button>
-                <button
-                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl transition"
-                    onClick={handleGoToSettings}
-                >
-                    ⚙️ Настройки
-                </button>
+                <div className="navbar-right">
+                    <a href="/settings">Настройки</a>
+                    <a href="/login" onClick={handleLogout}>Выйти</a>
+                </div>
             </div>
 
-            {/* Filter by date */}
-            <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-4">Фильтровать по датам</h2>
+            {/* Dashboard Title */}
+            <h1>💰 Dashboard</h1>
+
+            {/* Current Balance Section */}
+            <div className="current-balance">
+                <p>Текущий баланс:</p>
+                <p className="amount">${balance.toFixed(2)}</p>
+                {/* Add Transaction Button */}
+                <div className="add-transaction-container">
+                    <button
+                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-xl transition"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        ➕ Добавить транзакцию
+                    </button>
+                </div>
+            </div>
+
+            {/* Filter by Date */}
+            <div className="filter-section">
+                <h2>Фильтровать по датам</h2>
                 <input
                     type="date"
                     value={startDate}
@@ -189,88 +193,104 @@ const Dashboard = () => {
                     className="bg-gray-700 text-white p-2 rounded-md mb-4"
                 />
             </div>
-
             {isModalOpen && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2 className="text-xl font-semibold mb-4">Добавить транзакцию</h2>
-                        <form onSubmit={handleAddTransaction}>
-                            <select
-                                value={newTransaction.type}
-                                onChange={(e) =>
-                                    setNewTransaction({ ...newTransaction, type: e.target.value })
-                                }
-                                className="mb-3"
-                            >
-                                <option value="expense">Расход</option>
-                                <option value="income">Доход</option>
-                            </select>
+                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                    <div className="modal show" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-content">
+                            <h2 className="text-xl font-semibold mb-4 text-center">Добавить транзакцию</h2>
+                            <form onSubmit={handleAddTransaction}>
+                                <select
+                                    value={newTransaction.type}
+                                    onChange={(e) =>
+                                        setNewTransaction({...newTransaction, type: e.target.value})
+                                    }
+                                    className="mb-3"
+                                >
+                                    <option value="expense">Расход</option>
+                                    <option value="income">Доход</option>
+                                </select>
 
-                            <input
-                                type="number"
-                                placeholder="Сумма"
-                                value={newTransaction.amount}
-                                onChange={(e) =>
-                                    setNewTransaction({ ...newTransaction, amount: e.target.value })
-                                }
-                            />
-                            <select
-                                value={newTransaction.category}
-                                onChange={(e) =>
-                                    setNewTransaction({ ...newTransaction, category: e.target.value })
-                                }
-                                className="mb-3"
-                            >
-                                <option value="">Выберите категорию</option>
-                                {categories.map((category) => (
-                                    <option key={category.id} value={category.name}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                type="date"
-                                value={newTransaction.date}
-                                onChange={(e) =>
-                                    setNewTransaction({ ...newTransaction, date: e.target.value })
-                                }
-                            />
-                            <button type="submit">Добавить</button>
-                        </form>
-                        <button onClick={() => setIsModalOpen(false)}>Закрыть</button>
+                                <input
+                                    type="number"
+                                    placeholder="Сумма"
+                                    value={newTransaction.amount}
+                                    onChange={(e) =>
+                                        setNewTransaction({...newTransaction, amount: e.target.value})
+                                    }
+                                />
+                                <select
+                                    value={newTransaction.category}
+                                    onChange={(e) =>
+                                        setNewTransaction({...newTransaction, category: e.target.value})
+                                    }
+                                    className="mb-3"
+                                >
+                                    <option value="">Выберите категорию</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.name}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <input
+                                    type="date"
+                                    value={newTransaction.date}
+                                    onChange={(e) =>
+                                        setNewTransaction({...newTransaction, date: e.target.value})
+                                    }
+                                />
+                                <button type="submit">Добавить</button>
+                            </form>
+                            <button className="close" onClick={() => setIsModalOpen(false)}>Закрыть</button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Последние транзакции</h2>
-                {filteredTransactions.length === 0 ? (
+            {/* Transaction List and Charts */}
+            {/* Transaction List and Charts */}
+            <div className="transaction-list">
+                <h2 className="text-2xl font-bold mb-6">Последние транзакции</h2>
+                {transactions.length === 0 ? (
                     <p>Нет транзакций</p>
                 ) : (
-                    <ul>
+                    <div className="transaction-cards">
                         {filteredTransactions.map((tx) => (
-                            <li key={tx.id}>
-                                {tx.type === "income" ? "+" : "-"} {tx.amount} {tx.category} - {tx.date}
-                                <button onClick={() => handleEditTransaction(tx.id)}>Редактировать</button>
-                                <button onClick={() => handleDeleteTransaction(tx.id)}>Удалить</button>
-                            </li>
+                            <div className="transaction-card" key={tx.id}>
+                                <div className="transaction-info">
+                        <span className="amount">
+                            {tx.type === "income" ? "+" : "-"} {tx.amount}
+                        </span>
+                                    <span className="category">{tx.category}</span>
+                                    <span className="date">{tx.date}</span>
+                                </div>
+                                <div className="transaction-actions">
+                                    <button onClick={() => handleEditTransaction(tx.id)}>Редактировать</button>
+                                    <button onClick={() => handleDeleteTransaction(tx.id)}>Удалить</button>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
 
-            {/* Pie Chart for Income */}
-            <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Доходы</h2>
-                <Pie data={incomeChartData} />
+
+            <div className="pie-chart-wrapper">
+                <div className="pie-chart-container">
+                    <h2 className="text-xl font-semibold mb-4">Доходы</h2>
+                    <Pie data={incomeChartData}/>
+                </div>
+
+                <div className="pie-chart-container">
+                    <h2 className="text-xl font-semibold mb-4">Расходы</h2>
+                    <Pie data={expenseChartData}/>
+                </div>
             </div>
 
-            {/* Pie Chart for Expenses */}
-            <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Расходы</h2>
-                <Pie data={expenseChartData} />
-            </div>
+
+            <div className="clear"></div>
         </div>
+
     );
 };
 

@@ -1,0 +1,457 @@
+/* Global Styles */
+body {
+    background-color: #000; /* Black background */
+    color: white; /* White text */
+    font-family: 'Arial', sans-serif; /* Font style */
+}
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0ad4e; /* Yellow navbar */
+    padding: 10px 20px;
+}
+
+.navbar a {
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+.navbar .active {
+    font-weight: bold;
+}
+
+/* Centering Dashboard and Other Elements */
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* Current Balance Section */
+.current-balance {
+    background-color: #333;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.current-balance p {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.current-balance .amount {
+    font-size: 3rem; /* Larger font size */
+    color: #00FF00; /* Green color for balance */
+}
+
+/* Filter Section */
+.filter-section {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 1480px;
+}
+
+/* Transaction List and Charts */
+.transaction-list {
+    width: 48%;
+    float: left;
+    margin-right: 4%;
+}
+
+.chart-container {
+    width: 48%;
+    float: left;
+}
+
+.chart-container .chart {
+    margin-bottom: 20px;
+}
+
+.transaction-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.transaction-list li {
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #f0ad4e; /* Yellow buttons */
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #ec971f;
+}
+/* Modal - Centered Window Style */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background-color: #333; /* Slightly darker for better contrast */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Background overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+/* Modal Content */
+.modal-content {
+    color: white;
+    font-size: 18px;
+}
+
+/* Active modal (shown) */
+.modal.show {
+    opacity: 1;
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Input and select fields */
+input[type="number"],
+input[type="text"],
+input[type="date"],
+select {
+    background-color: #444; /* Darker background for input fields */
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    font-size: 16px;
+    width: 100%;
+    margin: 5px 0; /* Added some space around inputs */
+}
+
+/* Buttons */
+button {
+    background-color: #f0ad4e; /* Goldish color for buttons */
+    color: white;
+    padding: 14px 30px; /* Increased padding for better clickability */
+    border-radius: 8px;
+    font-size: 18px; /* Increased font size for readability */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none;
+    margin-top: 8px;
+}
+
+/* Hover effect for buttons */
+button:hover {
+    background-color: #ec971f; /* Darker gold on hover */
+}
+
+/* Close button styling */
+button.close {
+    background-color: #d9534f;
+    margin-top: 20px;
+}
+
+button.close:hover {
+    background-color: #c9302c;
+}
+
+/* Optional: For the fade-in effect */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Modal Animation */
+.modal.show {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Input placeholder text */
+input::placeholder {
+    color: #b0b0b0;
+}
+
+/* Styling for navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+
+.navbar a:hover {
+    background-color: #f0ad4e; /* Hover effect */
+}
+
+/* For the Dashboard title */
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+/* Styling for the "Добавить транзакцию" button */
+button.bg-yellow-600 {
+    background-color: #f0ad4e;
+    color: white;
+    font-size: 18px;
+    padding: 14px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Adjust modal content for better ergonomics */
+.modal-content {
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+input[type="number"], input[type="text"], input[type="date"], select {
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+}
+
+input[type="number"], input[type="text"], select {
+    background-color: #333;
+}
+
+input[type="date"] {
+    background-color: #333;
+    padding: 12px;
+}
+
+/* Adding spacing for better alignment */
+.mt-8 {
+    margin-top: 32px;
+}
+
+/* Aligning the form inputs nicely */
+input, select {
+    margin-bottom: 20px;
+}
+
+/* Centering form elements */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Centering Pie Chart */
+.pie-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    max-width: 100%;
+}
+
+/* Transaction List */
+.transaction-list {
+    margin-top: 20px;
+    color: white;
+    text-align: center;
+}
+
+/* Transaction Cards Container */
+.transaction-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Spacing between cards */
+}
+
+/* Transaction Card */
+.transaction-card {
+    background-color: #333;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+/* Button Styling for Icons */
+.icon-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+}
+
+.icon-button:hover {
+    color: #f0ad4e; /* Hover color for icons */
+}
+
+.icon-button i {
+    font-size: 20px; /* Icon size */
+}
+
+.transaction-card:hover {
+    transform: translateY(-5px); /* Slightly lift the card */
+    box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.4); /* Stronger shadow on hover */
+}
+
+/* Transaction Information */
+.transaction-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Transaction Actions (buttons) */
+.transaction-actions {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+}
+
+/* Buttons inside Transaction Cards */
+.transaction-card button {
+    background-color: #f0ad4e;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover Effect for Buttons */
+.transaction-card button:hover {
+    background-color: #ec971f;
+}
+
+/* Smaller buttons */
+.transaction-card button.small {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+/* Optional: Adding a lighter shadow for buttons */
+.transaction-card button:active {
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Transaction Info */
+.transaction-info {
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Amount Styling */
+.transaction-info .amount {
+    font-size: 20px; /* Larger size for amount */
+    font-weight: 600;
+    color: #f0ad4e; /* Golden color */
+    flex: 0 1 auto;
+}
+
+.transaction-info .category,
+.transaction-info .date {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    flex: 1 1 auto; /* Make category and date flexible */
+    text-align: right; /* Align date to the right */
+}
+
+/* Button Styling */
+.transaction-actions button {
+    background-color: #f0ad4e;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 5px;
+}
+
+.transaction-actions button:hover {
+    background-color: #ec971f;
+}
+
+/* CSS for the Pie Chart Containers */
+/* CSS for the Pie Chart Containers */
+.pie-chart-container {
+    max-width: 400px;  /* Max width for the chart */
+    width: 100%;
+    height: 300px; /* Set the height */
+    margin: 10px;  /* Space between charts */
+}
+
+/* Flex container for pie charts to display side by side */
+.pie-chart-wrapper {
+    display: flex;
+    justify-content: space-between; /* Spread the charts evenly */
+    align-items: center;
+    gap: 20px; /* Optional space between charts */
+}
+
+/* Optional: Adjust the Pie Chart's maximum size to make it even smaller if necessary */
+.pie-chart-container canvas {
+    max-width: 100% !important; /* Ensure the chart does not overflow the container */
+    height: auto !important; /* Keep the aspect ratio */
+}
+
+
+/* Reset Floats */
+.clear {
+    clear: both;
+}
