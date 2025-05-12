@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-
 // Register components for Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -177,12 +176,16 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <h1>💰 Dashboard</h1>
+            <h1>💰Coinkeeper</h1>
 
             {/* Current Balance Section */}
             <div className="current-balance">
                 <p>Текущий баланс:</p>
-                <p className="amount">${balance.toFixed(2)}</p>
+                <p className="amount">
+                    <span className={balance >= 0 ? "text-green-500" : "text-red-500"}>
+                        ${balance.toFixed(2)}
+                    </span>
+                </p>
                 <div className="add-transaction-container">
                     <button
                         className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-xl transition"
@@ -277,9 +280,9 @@ const Dashboard = () => {
                         {filteredTransactions.map((tx) => (
                             <div className="transaction-card" key={tx.id}>
                                 <div className="transaction-info">
-                                    <span className="amount">
-                                        {tx.type === "income" ? "+" : "-"} {tx.amount}
-                                    </span>
+                                    <span className={`amount ${tx.type === "income" ? "income" : "expense"}`}>
+    {tx.type === "income" ? "+" : "-"} {tx.amount}
+</span>
                                     <span className="category">{tx.category}</span>
                                     <span className="date">{tx.date}</span>
                                 </div>

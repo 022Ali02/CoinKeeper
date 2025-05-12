@@ -394,11 +394,21 @@ form {
     justify-content: space-between;
 }
 
-/* Amount Styling */
+/* Add or modify these styles in your Dashboard.css */
+
+/* Transaction Amount Colors */
+.transaction-info .amount.income {
+    color: #4CAF50 !important; /* Green for income */
+}
+
+.transaction-info .amount.expense {
+    color: #F44336 !important; /* Red for expense */
+}
+
+/* Make sure the existing amount class has proper styling */
 .transaction-info .amount {
-    font-size: 20px; /* Larger size for amount */
+    font-size: 20px;
     font-weight: 600;
-    color: #f0ad4e; /* Golden color */
     flex: 0 1 auto;
 }
 
