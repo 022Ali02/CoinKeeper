@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { getTransactions, addTransaction } from "../api";
+import { useNavigate } from "react-router-dom"; // Импортируем useNavigate для навигации
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+// Регистрируем компоненты для Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Dashboard = () => {
     const [transactions, setTransactions] = useState([]);
+    const [categories, setCategories] = useState([]); // Состояние для категорий
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTransaction, setNewTransaction] = useState({
         type: "expense", // Стандартно ставим расход
@@ -13,23 +20,15 @@ const Dashboard = () => {
         username: "admin", // Имя пользователя
     });
 
-    useEffect(() => {
-        // Загружаем транзакции из localStorage, если они там есть
-        const savedTransactions = JSON.parse(localStorage.getItem("transactions"));
-        if (savedTransactions) {
-            setTransactions(savedTransactions);
-        }
+    const navigate = useNavigate(); // Хук для навигации
 
-        // Если нужно, можно загрузить транзакции с сервера:
-        // const fetchTransactions = async () => {
-        //   try {
-        //     const data = await getTransactions();
-        //     setTransactions(data);
-        //   } catch (error) {
-        //     console.error("Ошибка при загрузке транзакций:", error);
-        //   }
-        // };
-        // fetchTransactions();
+    // Загружаем транзакции из localStorage при монтировании компонента
+    useEffect(() => {
+        const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || []; // Если нет, то пустой массив
+        setTransactions(savedTransactions);
+
+        const savedCategories = JSON.parse(localStorage.getItem("categories")) || [];
+        setCategories(savedCategories);
     }, []);
 
     const balance = transactions.reduce(
@@ -37,13 +36,37 @@ const Dashboard = () => {
         0
     );
 
+    const incomeTotal = transactions
+        .filter((tx) => tx.type === "income")
+        .reduce((acc, tx) => acc + tx.amount, 0);
+
+    const expenseTotal = transactions
+        .filter((tx) => tx.type === "expense")
+        .reduce((acc, tx) => acc + tx.amount, 0);
+
+    const chartData = {
+        labels: ["Доходы", "Расходы"],
+        datasets: [
+            {
+                data: [incomeTotal, expenseTotal], // Доходы и расходы
+                backgroundColor: ["#36A2EB", "#FF6384"], // Цвета секторов
+                hoverBackgroundColor: ["#36A2EB", "#FF6384"],
+            },
+        ],
+    };
+
     // Обработчик добавления транзакции
     const handleAddTransaction = async (e) => {
         e.preventDefault();
         try {
-            const response = await addTransaction(newTransaction);  // Добавляем транзакцию
-            setTransactions([...transactions, response]);  // Обновляем список транзакций
-            setIsModalOpen(false);  // Закрываем модальное окно
+            const response = await addTransaction(newTransaction); // Добавляем транзакцию
+            const updatedTransactions = [...transactions, response]; // Обновляем список транзакций
+            setTransactions(updatedTransactions); // Обновляем состояние
+
+            // Сохраняем обновленные транзакции в localStorage
+            localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
+
+            setIsModalOpen(false); // Закрываем модальное окно
             setNewTransaction({
                 type: "expense",
                 amount: "",
@@ -57,11 +80,15 @@ const Dashboard = () => {
         }
     };
 
-    // Обработчик выхода
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("transactions"); // Очистить транзакции из localStorage
         window.location.href = "/login"; // Перенаправляем на страницу логина
+    };
+
+    // Добавляем кнопку для перехода в Settings
+    const handleGoToSettings = () => {
+        navigate("/settings"); // Переход на страницу настроек
     };
 
     return (
@@ -84,6 +111,13 @@ const Dashboard = () => {
                     onClick={handleLogout} // Кнопка выхода
                 >
                     🚪 Выйти
+                </button>
+                {/* Кнопка для перехода в настройки */}
+                <button
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-xl transition"
+                    onClick={handleGoToSettings}
+                >
+                    ⚙️ Настройки
                 </button>
             </div>
 
@@ -111,17 +145,21 @@ const Dashboard = () => {
                                     setNewTransaction({ ...newTransaction, amount: e.target.value })
                                 }
                             />
-                            <input
-                                type="text"
-                                placeholder="Категория"
+                            {/* Дропдаун для выбора категории */}
+                            <select
                                 value={newTransaction.category}
                                 onChange={(e) =>
-                                    setNewTransaction({
-                                        ...newTransaction,
-                                        category: e.target.value,
-                                    })
+                                    setNewTransaction({ ...newTransaction, category: e.target.value })
                                 }
-                            />
+                                className="mb-3"
+                            >
+                                <option value="">Выберите категорию</option>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.name}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
                             <input
                                 type="text"
                                 placeholder="Комментарий"
@@ -160,6 +198,12 @@ const Dashboard = () => {
                         ))}
                     </ul>
                 )}
+            </div>
+
+            {/* Круговая диаграмма */}
+            <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">Статистика по транзакциям</h2>
+                <Pie data={chartData} />
             </div>
         </div>
     );
