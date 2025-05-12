@@ -1,25 +1,28 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
+import { loginStart, loginSuccess, loginFailure } from "../store/slices/authSlice";
 
 function Login() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const { loading, error } = useSelector((state) => state.auth);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        dispatch(loginStart());
         try {
-            await login({ username, password });
-            navigate("/todo");
-        } catch (error) {
-            alert("Ошибка входа");
+            const token = await login({ username, password });
+            dispatch(loginSuccess(token));
+            navigate("/dashboard");
+        } catch (err) {
+            dispatch(loginFailure("Неверный логин или пароль"));
         }
-    };
-
-    const handleGoToRegister = () => {
-        navigate("/register");
     };
 
     return (
@@ -31,17 +34,22 @@ function Login() {
                     placeholder="Логин"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                 /><br />
                 <input
                     type="password"
                     placeholder="Пароль"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 /><br />
-                <button type="submit">Войти</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Вход..." : "Войти"}
+                </button>
             </form>
+            {error && <p style={{ color: "red" }}>{error}</p>}
             <br />
-            <button onClick={handleGoToRegister}>Регистрация</button>
+            <button onClick={() => navigate("/register")}>Регистрация</button>
         </div>
     );
 }

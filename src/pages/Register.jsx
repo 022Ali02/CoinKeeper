@@ -27,12 +27,14 @@ function Register() {
                     placeholder="Логин"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                 /><br />
                 <input
                     type="password"
                     placeholder="Пароль"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 /><br />
                 <button type="submit">Зарегистрироваться</button>
             </form>
