@@ -1,6 +1,42 @@
 import axios from 'axios';
 
-const API_BASE_URL = "http://localhost:8080"; // Адрес твоего бэкенда
+const API_BASE_URL = "http://localhost:8080"; // backend todo
+const AUTH_API_URL = "http://localhost:8085/auth"; // backend auth
+
+// 📦 Axios interceptor: добавляем токен авторизации
+axios.interceptors.request.use((config) => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => Promise.reject(error));
+
+// --- AUTH SERVICE ---
+
+export const login = async (credentials) => {
+    try {
+        const response = await axios.post(`${AUTH_API_URL}/login`, credentials);
+        const token = response.data.token;
+        localStorage.setItem("token", token); // 💾 сохраняем токен
+        return token;
+    } catch (error) {
+        console.error("Ошибка при входе:", error);
+        throw error;
+    }
+};
+
+export const register = async (credentials) => {
+    try {
+        const response = await axios.post(`${AUTH_API_URL}/register`, credentials);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при регистрации:", error);
+        throw error;
+    }
+};
+
+// --- TODO SERVICE ---
 
 export const getTasks = async () => {
     try {
