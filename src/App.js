@@ -1,11 +1,11 @@
-
 // src/App.js
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Todo from "./pages/TodoApp";
-localStorage.removeItem("token");
+import Dashboard from "./pages/Dashboard";
+import Stats from "./pages/Stats";
+import Settings from "./pages/Settings";
 
 function App() {
     const location = useLocation();
@@ -13,10 +13,12 @@ function App() {
 
     return (
         <Routes>
-            <Route path="/" element={<Navigate to={token ? "/todo" : "/login"} />} />
-            <Route path="/login" element={!token ? <Login /> : <Navigate to="/todo" replace />} />
-            <Route path="/register" element={!token ? <Register onRegister={() => window.location.href = "/login"} /> : <Navigate to="/todo" replace />} />
-            <Route path="/todo" element={token ? <Todo /> : <Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} />} />
+            <Route path="/login" element={!token ? <Login /> : <Navigate to="/dashboard" replace />} />
+            <Route path="/register" element={!token ? <Register /> : <Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" replace />} />
+            <Route path="/stats" element={token ? <Stats /> : <Navigate to="/login" replace />} />
+            <Route path="/settings" element={token ? <Settings /> : <Navigate to="/login" replace />} />
         </Routes>
     );
 }
