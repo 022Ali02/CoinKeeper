@@ -47,13 +47,25 @@ const Dashboard = () => {
         .filter((tx) => tx.type === "expense")
         .reduce((acc, tx) => acc + tx.amount, 0);
 
+    // Filtered transactions for date range
+    const filteredTransactions = transactions.filter((tx) => {
+        const txDate = new Date(tx.date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && txDate < start) return false;
+        if (end && txDate > end) return false;
+
+        return true;
+    });
+
     // Data for the income chart
     const incomeChartData = {
         labels: categories.map((cat) => cat.name), // Category names for labels
         datasets: [
             {
                 data: categories.map((cat) =>
-                    transactions.filter(
+                    filteredTransactions.filter(
                         (tx) => tx.category === cat.name && tx.type === "income"
                     ).reduce((acc, tx) => acc + tx.amount, 0)
                 ),
@@ -69,7 +81,7 @@ const Dashboard = () => {
         datasets: [
             {
                 data: categories.map((cat) =>
-                    transactions.filter(
+                    filteredTransactions.filter(
                         (tx) => tx.category === cat.name && tx.type === "expense"
                     ).reduce((acc, tx) => acc + tx.amount, 0)
                 ),
@@ -118,24 +130,14 @@ const Dashboard = () => {
         navigate("/settings"); // Navigate to settings page
     };
 
-    // Handle date filter
-    const filteredTransactions = transactions.filter((tx) => {
-        const txDate = new Date(tx.date);
-        const start = startDate ? new Date(startDate) : null;
-        const end = endDate ? new Date(endDate) : null;
-
-        if (start && txDate < start) return false;
-        if (end && txDate > end) return false;
-
-        return true;
-    });
-
+    // Handle delete transaction
     const handleDeleteTransaction = (id) => {
         const updatedTransactions = transactions.filter((tx) => tx.id !== id);
         setTransactions(updatedTransactions);
         localStorage.setItem("transactions", JSON.stringify(updatedTransactions)); // Save to localStorage
     };
 
+    // Handle edit transaction
     const handleEditTransaction = (id) => {
         const transactionToEdit = transactions.find((tx) => tx.id === id);
         setNewTransaction(transactionToEdit);
