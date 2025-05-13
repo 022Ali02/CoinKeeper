@@ -168,7 +168,7 @@ const Dashboard = () => {
             {/* Navbar */}
             <div className="navbar">
                 <div className="navbar-left">
-                    <a href="/dashboard" className="active">Dashboard</a>
+                    <a href="/src/pages/Dashboard" className="active">Dashboard</a>
                 </div>
                 <div className="navbar-right">
                     <a href="/settings">Настройки</a>

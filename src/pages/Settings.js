@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Settings.css";
+import { Link } from "react-router-dom";
 
 const Settings = () => {
     const [categories, setCategories] = useState([]);
@@ -58,13 +59,14 @@ const Settings = () => {
             {/* Navbar - same as Dashboard */}
             <div className="navbar">
                 <div className="navbar-left">
-                    <a href="/dashboard" className="active">Dashboard</a>
+                    <Link to="/dashboard" className="active">Dashboard</Link>
                 </div>
                 <div className="navbar-right">
-                    <a href="/settings">Настройки</a>
+                    <Link to="/settings">Настройки</Link>
                     <a href="/login" onClick={handleLogout}>Выйти</a>
                 </div>
             </div>
+
 
             <div className="settings-container">
                 <h1 className="settings-heading">Настройки категорий</h1>
@@ -98,7 +100,7 @@ const Settings = () => {
                         ) : (
                             categories.map((category) => (
                                 <li key={category.id} className="category-item">
-                                    <span className="category-name" style={{ color: category.color }}>
+                                    <span className="category-name" style={{color: category.color}}>
                                         {category.name}
                                     </span>
                                     <div className="category-buttons">
@@ -133,13 +135,13 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     value={categoryToEdit.name}
-                                    onChange={(e) => setCategoryToEdit({ ...categoryToEdit, name: e.target.value })}
+                                    onChange={(e) => setCategoryToEdit({...categoryToEdit, name: e.target.value})}
                                     className="input-field"
                                 />
                                 <input
                                     type="color"
                                     value={categoryToEdit.color}
-                                    onChange={(e) => setCategoryToEdit({ ...categoryToEdit, color: e.target.value })}
+                                    onChange={(e) => setCategoryToEdit({...categoryToEdit, color: e.target.value})}
                                     className="color-picker"
                                 />
                                 <button type="submit" className="submit-button">
